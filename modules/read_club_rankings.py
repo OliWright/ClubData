@@ -1,0 +1,67 @@
+from swimmer import Swimmer
+from swim import Swim
+from event import Event
+
+def parse_event(tokens, course_code):
+  str = tokens[0][12:] # Because they all start with 'Male/Female'
+  return Event.create_from_str( str, course_code )
+
+def is_date(str):
+  tokens = str.split('/')
+  return len(tokens) == 3
+
+def line_is_swimmer(tokens):
+  return (len(tokens) == 4) and (tokens[3].strip().isdigit())
+
+def line_is_swim(tokens):
+  num_tokens = len(tokens)
+  return ((num_tokens == 6) and is_date(tokens[1])) or ((num_tokens == 5) and is_date(tokens[0]) and (tokens[3] != '/'))
+
+def line_is_event_type(tokens):
+  return (len(tokens) == 1) and tokens[0].startswith('Male/Female')
+
+def ReadClubRankingsFile(file_name, course_code, swimmers, swimmers_dict):
+  club_rankings_file = open( file_name, 'r' )
+  is_male = True
+  current_swimmer = None
+  current_event = None
+  for line in club_rankings_file:
+    tokens = line.split('\t')
+    if line_is_swimmer(tokens):
+      new_swimmer = Swimmer.from_club_rankings(is_male, tokens)
+      if current_swimmer is not None:
+        if is_male and (new_swimmer.last_name < current_swimmer.last_name):
+          # Club rankings report has all the male swimmers followed by all the female swimmers
+          print("Switching from male to female")
+          is_male = False
+          new_swimmer.is_male = False
+      if new_swimmer.asa_number in swimmers_dict:
+        # We've already seen this swimmer
+        if (current_swimmer is not None) and (current_swimmer.asa_number != new_swimmer.asa_number):
+          print("Continue " + str(new_swimmer))
+        current_swimmer = swimmers_dict[new_swimmer.asa_number]
+        new_swimmer = None
+      if new_swimmer is not None:
+        current_swimmer = new_swimmer
+        swimmers_dict[current_swimmer.asa_number] = current_swimmer
+        print("New " + str(current_swimmer))
+        swimmers.append(current_swimmer)
+        current_event = None
+    elif line_is_event_type(tokens):
+      assert(current_swimmer is not None)
+      current_event = parse_event(tokens, course_code)
+      #print(str(current_event))
+    elif line_is_swim(tokens):
+      assert(current_swimmer is not None)
+      assert(current_event is not None)
+      swim = Swim(current_swimmer.asa_number, current_event, tokens)
+      current_swimmer.swims.append(swim)
+
+def ReadClubRankingsFiles():
+  swimmers = []
+  swimmers_dict = {} # ASA number to swimmer
+  print("Short Course")
+  ReadClubRankingsFile('ClubRankingsSC.txt', 'S', swimmers, swimmers_dict)
+  print("Long Course")
+  ReadClubRankingsFile('ClubRankingsLC.txt', 'L', swimmers, swimmers_dict)
+  return swimmers
