@@ -1,3 +1,6 @@
+import sys
+sys.path.append("modules")
+
 import read_club_rankings
 import swim_data_sheets
 
