@@ -212,3 +212,5 @@ Event.create( 4, 200, "L" ),
 Event.create( 4, 400, "L" ),
 Event.create( 4, 100, "L" ),
 )
+
+num_events = len(short_course_events)

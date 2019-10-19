@@ -25,7 +25,6 @@
 import logging
 import time
 import datetime
-import helpers
 import re
 
 from operator import attrgetter
@@ -34,6 +33,7 @@ import sys
 sys.path.append("modules")
 sys.path.append("qualifying_times")
 
+import helpers
 from swim import Swim
 from swimmer import Swimmer
 from race_time import RaceTime

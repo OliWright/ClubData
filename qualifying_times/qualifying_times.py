@@ -80,6 +80,9 @@ def _print_qualifying_times( qt_by_event, heading, do_conversion ):
   if is_long_course:
     course_code = "L"
   num_events = len( short_course_events )
+  precision = 2
+  if do_conversion:
+    precision = 1
   for event_code in range(num_events):
     times = qt_by_event[ event_code ]
     if times is not None:
@@ -89,7 +92,7 @@ def _print_qualifying_times( qt_by_event, heading, do_conversion ):
         converted_time = time
         if do_conversion:
           converted_time = event.convert_time(time)
-        print('<td>'+ str(RaceTime(converted_time, precision=1)) + '</td>')
+        print('<td>'+ str(RaceTime(converted_time, precision=precision)) + '</td>')
       print('</tr>')
   print('</tbody></table>')
   
