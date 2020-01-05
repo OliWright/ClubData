@@ -43,8 +43,8 @@ from nt_consideration_times import get_nt_consideration_time
 
 import read_club_rankings
 
-folder = 'f:/SwimLists/'
-entry_list_file = open( folder + 'EntryList.txt', 'r' )
+folder = 'output/'
+#entry_list_file = open( folder + 'EntryList.txt', 'r' )
 consideration_times_file = open( folder + 'ConsiderationTimes.txt', 'w' )
 consideration_times_verbose_file = open( folder + 'ConsiderationTimesVerbose.txt', 'w' )
 consideration_times_html_index_file = open( folder + 'consideration_times_2019_index.html', 'w' )
@@ -218,7 +218,7 @@ for swimmer_times in all_swimmer_times:
 	age = helpers.CalcAge( swimmer.date_of_birth, club_champs_date )
 	
 	html = '<li><a href="'
-	page_name = 'individual_consideration_times_2018/' + str( swimmer.asa_number ) + '.html'
+	page_name = 'individual_consideration_times_2019/' + str( swimmer.asa_number ) + '.html'
 	html += page_name
 	html += '">' + swimmer_times.full_name + '</a></li>'
 	consideration_times_html_index_file.write( html + '\n' )

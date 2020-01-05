@@ -63,7 +63,7 @@ _SPREADSHEET_DATA_STR = """50 Free	0.3	0.26	0.22	0.2	0.18	0.17	0.16	0.15
 200 IM	1.8	1.56	1.32	1.2	1.08	1.02	0.96	0.9
 400 IM	4.5	3.9	3.3	3	2.7	2.55	2.4	2.25"""
 
-folder = 'f:/SwimLists/'
+folder = 'output/'
 consideration_times_file = open( folder + 'ConsiderationTimes.txt', 'r' )
 race_times_file = open( folder + 'RaceTimes.txt', 'r' )
 missing_consideration_times_file = open( folder + 'MissingConsiderationTimes.txt', 'w' )
@@ -250,15 +250,21 @@ sorted_scores_girls.sort( key=attrgetter('points'), reverse=True )
 def write_scores( sorted_scores, file_name ):
   print( 'Writing file' )
   scores_file = open( folder + file_name, 'w' )
-  number = 1
+  number = 0
+  held_number = 0
+  previous_points = 0
   for swimmer_times in sorted_scores:
+    number = number + 1
+    if swimmer_times.points != previous_points:
+      held_number = number
+    previous_points = swimmer_times.points
     swimmer = swimmer_times.swimmer
     age_for_points = swimmer_times.age
     if age_for_points > 16:
       age_for_points = 16
     age_column = age_for_points - 9
     scores_file.write( '<p class="question">' )
-    scores_file.write( str(number) + ': ' + swimmer_times.full_name + ' (' + str( swimmer_times.points ) + ' points)' )
+    scores_file.write( str(held_number) + ': ' + swimmer_times.full_name + ' (' + str( swimmer_times.points ) + ' points)' )
     scores_file.write( '</p>\n' )
     scores_file.write( '<div class="answer"><table><tr><th>Event</th><th>Consideration Time</th><th>Race Time</th><th>Points</th></tr>\n' )
     for race in swimmer_times.race_by_event:
@@ -275,7 +281,6 @@ def write_scores( sorted_scores, file_name ):
         scores_file.write( '<td>' + str( race.points ) + '</td>' )
         scores_file.write( '</tr>\n' )
     scores_file.write( '</table></div>\n' )
-    number = number + 1
   scores_file.close()
 
 write_scores( sorted_scores_boys, "ScoresBoys.html" )

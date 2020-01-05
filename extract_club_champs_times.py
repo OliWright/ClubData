@@ -40,7 +40,7 @@ from event import short_course_events
 
 import read_club_rankings
 
-folder = 'f:/SwimLists/'
+folder = 'output/'
 race_times_file = open( folder + 'RaceTimes.txt', 'w' )
 club_champs_start_date_str = '8/9/2019'
 club_champs_end_date_str = '21/9/2019'
