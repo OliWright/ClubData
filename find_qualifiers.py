@@ -43,7 +43,7 @@ from event import short_course_events
 from qualifying_times import get_qualifying_time
 import read_club_rankings
 
-folder = 'f:/SwimLists/'
+folder = 'output/'
 qt_file = open( folder + 'Qualifiers.txt', 'w' )
 qt_html_file = open( folder + 'Qualifiers.html', 'w' )
 maximum_age = 23 # Any swimmer older will be excluded
