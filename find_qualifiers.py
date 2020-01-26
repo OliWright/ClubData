@@ -120,11 +120,26 @@ def process_swimmer( swimmer, swims ):
         #print( swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
         # Round to 0.1s
         swim.converted_time = math.floor((swim.converted_time * 10) + 0.5) * 0.1
-      
+
       pb = pb_by_event[ event_code ]
       qual_pb = qual_pb_by_event[ event_code ]
-      if swim.qualifies and ((qual_pb is None) or (swim.converted_time < qual_pb.converted_time)):
-        qual_pb_by_event[ event_code ] = swim
+      if swim.qualifies:
+        if prefer_qualifying_times_in_target_course and (qual_pb is not None):
+          # This meet insists that if you have qualifying times in the target course
+          # then they should take precedence over other swims
+          if qual_pb.is_converted and (not swim.is_converted):
+            # Pretend the current qual_pb does not exist
+            qual_pb = None
+        if ((qual_pb is None) or (swim.converted_time < qual_pb.converted_time)):
+          use_this_swim = True
+          if prefer_qualifying_times_in_target_course and (qual_pb is not None):
+            # This meet insists that if you have qualifying times in the target course
+            # then they should take precedence over other swims
+            if (not qual_pb.is_converted) and swim.is_converted:
+              # Which means we can't use this swim
+              use_this_swim = False
+          if use_this_swim:
+            qual_pb_by_event[ event_code ] = swim
       if (pb is None) or (swim.converted_time < pb.converted_time):
         #print( "PB: " + swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
         pb_by_event[ event_code ] = swim

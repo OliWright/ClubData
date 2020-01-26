@@ -25,6 +25,7 @@ max_age = 17
 age_on_date_str = '31/12/2020'
 earliest_pb_date_str = '2/1/2019'
 is_long_course = False
+prefer_qualifying_times_in_target_course = False
 
 max_qualifying_meet_level = 4
 
