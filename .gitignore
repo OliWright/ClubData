@@ -105,3 +105,8 @@ $RECYCLE.BIN/
 credentials.json
 token.pickle
 modules/sheet_id.py
+
+# Output and data folder or link
+output/
+data/
+data
