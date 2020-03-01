@@ -121,9 +121,13 @@ def process_swimmer( swimmer, swims ):
         # Round to 0.1s
         swim.converted_time = math.floor((swim.converted_time * 10) + 0.5) * 0.1
 
-      pb = pb_by_event[ event_code ]
-      qual_pb = qual_pb_by_event[ event_code ]
+      qt = get_qualifying_time( event_code, swimmer.is_male, age )
+      if (qt is None) or (swim.converted_time > qt):
+        swim.qualifies = False
+
       if swim.qualifies:
+        qual_pb = qual_pb_by_event[ event_code ]
+        #print( "Considering: " + swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
         if prefer_qualifying_times_in_target_course and (qual_pb is not None):
           # This meet insists that if you have qualifying times in the target course
           # then they should take precedence over other swims
@@ -140,6 +144,8 @@ def process_swimmer( swimmer, swims ):
               use_this_swim = False
           if use_this_swim:
             qual_pb_by_event[ event_code ] = swim
+
+      pb = pb_by_event[ event_code ]
       if (pb is None) or (swim.converted_time < pb.converted_time):
         #print( "PB: " + swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
         pb_by_event[ event_code ] = swim
@@ -148,6 +154,7 @@ def process_swimmer( swimmer, swims ):
   converted_from_course_name = "LC"
   if is_long_course:
     converted_from_course_name = "SC"
+
   for i in range( 0, num_events ):
     qt = get_qualifying_time( i, swimmer.is_male, age )
     if qt is not None:
@@ -184,7 +191,8 @@ qt_html_file.write( '<table>' )
 swimmers = read_club_rankings.ReadClubRankingsFiles()
 swimmers.sort(key=Swimmer.sortBySurname)
 for swimmer in swimmers:
-  process_swimmer(swimmer, swimmer.swims)
+  if True: #swimmer.full_name() == "Sophie George":
+    process_swimmer(swimmer, swimmer.swims)
 
 qt_file.close()    
 
