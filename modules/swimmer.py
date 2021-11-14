@@ -22,6 +22,17 @@
 import datetime
 import helpers
 
+special_case_names = {
+  "Yu Yam Ian Chan" : "Ian Chan",
+  "Naomi Kington" : "Naomi Kington"
+}
+
+def check_special_case_name(name):
+  replacement = special_case_names.get(name)
+  if replacement is not None:
+    return replacement
+  return name
+
 class Swimmer():
   # Constructor
   def __init__(self, is_male, first_name, last_name, asa_number, date_of_birth, known_as = ''):
@@ -53,7 +64,7 @@ class Swimmer():
   @classmethod
   def from_club_rankings(cls, is_male, tokens) -> 'Swimmer':
     asa_number = int( tokens[3] )
-    names = tokens[0].split(' ')
+    names = check_special_case_name(tokens[0].strip()).split(' ')
     last_name = names[1].strip()
     first_name = names[0].strip()
     known_as = ''

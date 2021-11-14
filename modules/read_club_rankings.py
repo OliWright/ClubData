@@ -25,7 +25,7 @@ def line_is_event_type(tokens):
 def line_is_course_code(tokens):
   return (len(tokens) == 1) and (tokens[0].strip().endswith('Course'))
 
-def ReadClubRankingsFile(file_name, swimmers, swimmers_dict):
+def ReadClubRankingsFile(file_name, swimmers, swimmers_dict, exclude_swimmers):
   club_rankings_file = open( file_name, 'r' )
   is_male = True
   current_swimmer = None
@@ -55,7 +55,11 @@ def ReadClubRankingsFile(file_name, swimmers, swimmers_dict):
           #print("Switching from male to female")
           is_male = False
           new_swimmer.is_male = False
-      if new_swimmer.asa_number in swimmers_dict:
+      if exclude_swimmers is not None and new_swimmer.full_name() in exclude_swimmers:
+        # Effectively throw this swimmer away
+        current_swimmer = new_swimmer
+        new_swimmer = None
+      elif new_swimmer.asa_number in swimmers_dict:
         # We've already seen this swimmer
         #if (current_swimmer is not None) and (current_swimmer.asa_number != new_swimmer.asa_number):
           #print("Continue " + str(new_swimmer))
@@ -81,11 +85,12 @@ def ReadClubRankingsFile(file_name, swimmers, swimmers_dict):
       num_new_swims = num_new_swims + 1
   print(str(num_new_swimmers) + " new swimmers and " + str(num_new_swims) + " new swims")
 
-def ReadClubRankingsFiles():
+def ReadClubRankingsFiles(exclude_swimmers = None):
   swimmers = []
   swimmers_dict = {} # ASA number to swimmer
   
   for file in os.listdir("data"):
     if file.endswith(".txt"):
-      ReadClubRankingsFile(os.path.join("data", file), swimmers, swimmers_dict)
+      ReadClubRankingsFile(os.path.join("data", file), swimmers, swimmers_dict, exclude_swimmers)
+  swimmers.sort(key=Swimmer.sortBySurname)
   return swimmers

@@ -43,48 +43,12 @@ from event import short_course_events
 from qualifying_times import get_qualifying_time
 import read_club_rankings
 
+from old_swimmers import old_swimmers
+
 folder = 'output/'
 qt_file = open( folder + 'Qualifiers.txt', 'w' )
 qt_html_file = open( folder + 'Qualifiers.html', 'w' )
 maximum_age = 23 # Any swimmer older will be excluded
-
-# Swimmers that are in our database that no longer swim for Winsford
-excluded_swimmers = {
-"Abbie Christopherson",
-"Alice Deeming",
-"Alisha Hawkins",
-"Amber Rose",
-"Anna Crossland",
-"Ashley Hogg",
-"Benjamin Townsend",
-"Brandon Sharkey",
-"Callum Chapple",
-"Charlotte Howman",
-"Charlotte Pagett",
-"Daniel Hulme",
-"Ellie Cushen",
-"Emily Riddick",
-"Georgia Farr",
-"Grace Farr",
-"Hannah McEnaney",
-"Harrison Aspinall",
-"Jamie Young",
-"Jordan Gaskell",
-"Kate Kenworthy",
-"Kate Young",
-"Katie Wilson",
-"Keaton Haydon",
-"Kyle Hawkins",
-"Liadan Wilkes",
-"Lily Harwood",
-"Lydia Rose",
-"Poppy Maskill",
-"Rebecca Broadhurst",
-"Rose Maskill",
-"Samuel James",
-"Thomas Bloor",
-"William James"
-}
 
 age_on_date = helpers.ParseDate_dmY( age_on_date_str )
 earliest_pb_date = helpers.ParseDate_dmY( earliest_pb_date_str )
@@ -94,7 +58,7 @@ def process_swimmer( swimmer, swims ):
   age = helpers.CalcAge( swimmer.date_of_birth, age_on_date )
  
   full_name = swimmer.full_name()
-  if full_name in excluded_swimmers:
+  if full_name in old_swimmers:
     return;
 
   if age > maximum_age:
@@ -189,7 +153,6 @@ qt_html_file.write( '<table>' )
 
 # Read the swim list and process the swimmers
 swimmers = read_club_rankings.ReadClubRankingsFiles()
-swimmers.sort(key=Swimmer.sortBySurname)
 for swimmer in swimmers:
   if True: #swimmer.full_name() == "Sophie George":
     process_swimmer(swimmer, swimmer.swims)
