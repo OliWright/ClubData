@@ -48,16 +48,40 @@ def _parse_spreadsheet_data( spreadsheet_data ):
       else:
         qt_for_event.append( float( RaceTime( columns[i] ) ) )
   return qt_by_event
-        
+
 _boys_qt_by_event = _parse_spreadsheet_data( BOYS_SPREADSHEET_DATA_STR )
 _girls_qt_by_event = _parse_spreadsheet_data( GIRLS_SPREADSHEET_DATA_STR )
-    
+_boys_consideration_by_event = [ None ] * len( short_course_events )
+_girls_consideration_by_event = [ None ] * len( short_course_events )
+if BOYS_CONSIDERATION_TIMES_STR is not None:
+  _boys_consideration_by_event = _parse_spreadsheet_data( BOYS_CONSIDERATION_TIMES_STR )
+if GIRLS_CONSIDERATION_TIMES_STR is not None:
+  _girls_consideration_by_event = _parse_spreadsheet_data( GIRLS_CONSIDERATION_TIMES_STR )
+
 def get_qualifying_time( event_code, is_male, age ):
   qt_for_event = None
   if is_male:
     qt_for_event = _boys_qt_by_event[ event_code ]
   else:
     qt_for_event = _girls_qt_by_event[ event_code ]
+  if qt_for_event is None:
+    return None
+  qt_age = age
+  if age < min_age:
+    qt_age = min_age
+  if age > max_age:
+    qt_age = max_age
+  # Add a very small epsilon, because it looks like our roundings
+  # still have very small errors which can make <= testing fail
+  # on numbers that superficially appear very equal.
+  return qt_for_event[ qt_age - min_age ] + 0.000000001
+
+def get_consideration_time( event_code, is_male, age ):
+  qt_for_event = None
+  if is_male:
+    qt_for_event = _boys_consideration_by_event[ event_code ]
+  else:
+    qt_for_event = _girls_consideration_by_event[ event_code ]
   if qt_for_event is None:
     return None
   qt_age = age

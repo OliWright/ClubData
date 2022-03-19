@@ -41,6 +41,7 @@ from qualifying_event_wrapper import *
 
 from event import short_course_events
 from qualifying_times import get_qualifying_time
+from qualifying_times import get_consideration_time
 import read_club_rankings
 
 from old_swimmers import old_swimmers
@@ -48,7 +49,7 @@ from old_swimmers import old_swimmers
 folder = 'output/'
 qt_file = open( folder + 'Qualifiers.txt', 'w' )
 qt_html_file = open( folder + 'Qualifiers.html', 'w' )
-maximum_age = 23 # Any swimmer older will be excluded
+maximum_age = 100 # Any swimmer older will be excluded
 
 age_on_date = helpers.ParseDate_dmY( age_on_date_str )
 earliest_pb_date = helpers.ParseDate_dmY( earliest_pb_date_str )
@@ -77,7 +78,7 @@ def process_swimmer( swimmer, swims ):
       event_code = swim.event.get_short_course_event_code()
       swim.converted_time = swim.race_time
       swim.is_converted = False
-      swim.qualifies = (swim.level <= max_qualifying_meet_level)
+      swim.meet_level_qualifies = (swim.level <= max_qualifying_meet_level)
       if swim.event.is_long_course() != is_long_course:
         swim.converted_time = swim.event.convert_time( swim.race_time )
         swim.is_converted = True
@@ -86,10 +87,11 @@ def process_swimmer( swimmer, swims ):
         swim.converted_time = math.floor((swim.converted_time * 10) + 0.5) * 0.1
 
       qt = get_qualifying_time( event_code, swimmer.is_male, age )
+      swim.qualifies = True
       if (qt is None) or (swim.converted_time > qt):
         swim.qualifies = False
 
-      if swim.qualifies:
+      if swim.qualifies and swim.meet_level_qualifies:
         qual_pb = qual_pb_by_event[ event_code ]
         #print( "Considering: " + swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
         if prefer_qualifying_times_in_target_course and (qual_pb is not None):
@@ -121,9 +123,14 @@ def process_swimmer( swimmer, swims ):
 
   for i in range( 0, num_events ):
     qt = get_qualifying_time( i, swimmer.is_male, age )
+    ct = get_consideration_time( i, swimmer.is_male, age )
     if qt is not None:
+      if (ct is None) or (ct < qt):
+        ct = qt
       pb = qual_pb_by_event[i]
-      if (pb is None) or (pb.converted_time > qt):
+#      if qt > ct:
+#        print(short_course_events[i].short_name_without_course() + ' CT: ' + str( RaceTime( ct ) ) + ' QT: ' + str( RaceTime( qt ) ))
+      if (pb is None) or (pb.converted_time > ct):
         # There isn't a time from a qualifying event, or it was too slow.
         # Let's consider a non-qualifying event instead (if there is one).
         #if pb is not None:
@@ -131,9 +138,11 @@ def process_swimmer( swimmer, swims ):
         pb = pb_by_event[i]
       if pb is not None:
         race_time = pb.converted_time
-        if race_time <= qt:
-          tag_class = "qualified"
-          if not pb.qualifies:
+        if race_time <= ct:
+          tag_class = "considered"
+          if race_time <= qt:
+            tag_class = "qualified"
+          if not pb.meet_level_qualifies:
             tag_class = "not-qualified"
           if not printed_name:
             qt_file.write( full_name + " (" + str(age) + ")\n" )
