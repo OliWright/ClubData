@@ -92,6 +92,38 @@ class Event:
     return cls.create( stroke_id, distance, course_code )
   
   @classmethod
+  def create_from_long_event_str( cls, string, course_code):
+    # More general parsing that can cope with the likes of
+    # "Girls 10 Yrs/Over 100m Butterfly"
+    distance = 50
+    stroke_id = None
+    substrings = string.split()
+    for substring in substrings:
+      if substring.lower().startswith( 'fr' ):
+        stroke_id = 0
+      elif substring.lower().startswith( 'br' ):
+        stroke_id = 1
+      elif substring.lower().startswith( 'bu' ) or substrings[1].lower().startswith( 'fl' ):
+        stroke_id = 2
+      elif substring.lower().startswith( 'ba' ):
+        stroke_id = 3
+      elif substring.lower().startswith( 'in' ) or substring.lower().startswith( 'im' ):
+        stroke_id = 4
+      elif substring.startswith( '50' ):
+        distance = 50
+      elif substring.startswith( '100' ):
+        distance = 100
+      elif substring.startswith( '200' ):
+        distance = 200
+      elif substring.startswith( '400' ):
+        distance = 400
+      elif substring.startswith( '800' ):
+        distance = 800
+      elif substring.startswith( '1500' ):
+        distance = 1500
+    return cls.create( stroke_id, distance, course_code )
+
+  @classmethod
   def create_from_code( cls, event_code, course_code ):
     if course_code == "L":
       event_code = event_code | 0x100
