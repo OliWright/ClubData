@@ -71,6 +71,19 @@ class Swimmer():
     date_of_birth = helpers.ParseDate_dmY( tokens[1] )
     return cls(is_male, first_name, last_name, asa_number, date_of_birth, known_as)
 
+  @classmethod
+  def from_swimming_events_csv(cls, csv_row) -> 'Swimmer':
+    names = csv_row['Name'].split(' ')
+    first_name = names[0]
+    last_name = names[len(names)-1]
+    date_of_birth = None
+    asa_number = int(csv_row['ASA-Number'])
+    is_male = False
+    known_as = ''
+    if csv_row['Gender'] == 'male':
+      is_male = True
+    return cls(is_male, first_name, last_name, asa_number, date_of_birth, known_as)
+
   def full_name(self):
     return self.first_name + " " + self.last_name
 
@@ -80,8 +93,11 @@ class Swimmer():
     return self.full_name()
     
   def date_of_birth_str(self):
-    return self.date_of_birth.strftime("%d/%m/%Y")
-    
+    if self.date_of_birth is not None:
+      return self.date_of_birth.strftime("%d/%m/%Y")
+    else:
+      return 'unknown'
+
   def sortBySurname(swimmer):
     return swimmer.last_name + ' ' + swimmer.first_name
 
