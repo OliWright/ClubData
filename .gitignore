@@ -106,6 +106,9 @@ credentials.json
 token.pickle
 modules/sheet_id.py
 
+# Don't upload swimmer names
+modules/old_swimmers.py
+
 # Output and data folder or link
 output/
 data/
