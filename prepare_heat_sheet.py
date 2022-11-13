@@ -1,4 +1,6 @@
-file = open('C:\\Users\\Sue\\Downloads\\2022-02-19_1339-Winsford_Time_Trial_19th_February_2022-heat-sheets.csv', 'r')
+file = open('C:\\Users\\Sue\\Downloads\\2022-09-24_0927-Winsford_ASC_Club_Championships_2022-heat-sheets (1).csv', 'r')
+
+include_club = False
 
 heat = 0
 
@@ -15,8 +17,14 @@ for line in file:
         # Change of heat
         heat = this_heat
         print('Heat ' + str(heat))
-        print('Lane\tSwimmer\tAge\tEntry Time')
-      print(tokens[1] +'\t' + tokens[2] +'\t' + tokens[4] +'\t' + tokens[5])
+        if include_club:
+          print('Lane\tSwimmer\tClub\tAge\Entry Time')
+        else:
+          print('Lane\tSwimmer\tAge\t\tEntry Time')
+      if include_club:
+        print(tokens[1] +'\t' + tokens[2] +'\t' + tokens[3] +'\t' + tokens[4] +'\t' + tokens[5])
+      else:
+        print(tokens[1] +'\t' + tokens[2] +'\t' + tokens[4] +'\t\t' + tokens[5])
   elif line[0:3].isdigit():
     # Event header
     print(line)
