@@ -67,8 +67,8 @@ folder = 'output/'
 consideration_times_file = open( folder + 'ConsiderationTimes.txt', 'r' )
 race_times_file = open( folder + 'RaceTimes.txt', 'r' )
 missing_consideration_times_file = open( folder + 'MissingConsiderationTimes.txt', 'w' )
-club_champs_start_date_str = '8/9/2019'
-club_champs_end_date_str = '21/9/2019'
+club_champs_start_date_str = '11/9/2022'
+club_champs_end_date_str = '24/9/2022'
 
 club_champs_start_date = helpers.ParseDate_dmY( club_champs_start_date_str )
 club_champs_end_date = helpers.ParseDate_dmY( club_champs_end_date_str )
@@ -225,6 +225,8 @@ for name, swimmer_times in swimmer_times_by_name.items():
       race.points = 0
       if (race.time is not None) and (race.consideration_time) is not None:
         improvement = race.consideration_time - race.time
+        #Halve the improvement for 2021 because of Covid, and taking the consideration times from 2 years ago
+        #improvement *= 0.5
         event_code = race.event.get_short_course_event_code()
         points = improvement / seconds_per_point_by_event[ event_code ][ age_column ]
         print( str(race.event) + " " + str(seconds_per_point_by_event[ event_code ][ age_column ]) + " " + str(improvement) )

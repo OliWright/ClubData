@@ -48,16 +48,16 @@ folder = 'output/'
 #entry_list_file = open( folder + 'EntryList.txt', 'r' )
 consideration_times_file = open( folder + 'ConsiderationTimes.txt', 'w' )
 consideration_times_verbose_file = open( folder + 'ConsiderationTimesVerbose.txt', 'w' )
-consideration_times_html_index_file = open( folder + 'consideration_times_2021_index.html', 'w' )
-consideration_times_folder = 'individual_consideration_times_2021/'
-club_champs_start_date_str = '12/9/2021'
-club_champs_end_date_str = '2/10/2021'
+consideration_times_html_index_file = open( folder + 'consideration_times_2022_index.html', 'w' )
+consideration_times_folder = 'individual_consideration_times_2022/'
+club_champs_start_date_str = '11/9/2022'
+club_champs_end_date_str = '24/9/2022'
 maximum_age = 21 # Any swimmer older will be excluded
-previous_club_champs_name = "Winsford Swim Team Club Championships"
+previous_club_champs_name = "Winsford ASC Club Championships 2021"
 
 club_champs_start_date = helpers.ParseDate_dmY( club_champs_start_date_str )
 club_champs_date = helpers.ParseDate_dmY( club_champs_end_date_str )
-consideration_date = datetime.date( club_champs_date.year - 2, club_champs_date.month, club_champs_date.day )
+consideration_date = datetime.date( club_champs_date.year - 1, club_champs_date.month, club_champs_date.day )
 consideration_date_str = consideration_date.strftime( '%d/%m/%Y' )
 num_events = len( short_course_events )
 

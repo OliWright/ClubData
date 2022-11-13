@@ -108,7 +108,7 @@ def ConnectToSheets():
   print('Getting sheet information')
   request = sheetsAPI.get(spreadsheetId=SPREADSHEET_ID)
   sheets = request.execute()
-  print(sheets)
+  #print(sheets)
 
 def FormatDate(date):
   return date.strftime("%d/%m/%Y")
@@ -141,7 +141,8 @@ def UpdateSwimmerData(swimmers):
       # AddUpdateWorksheetPropertiesToBatchRequests(properties, batch_requests_body)
     
     if existing_num_rows == (num_swims + 1):
-      print(swimmer.full_name() + " is already up to date.")
+      #print(swimmer.full_name() + " is already up to date.")
+      pass
     else:
       print("Updating " + swimmer.full_name())
       if existing_num_rows == 0:

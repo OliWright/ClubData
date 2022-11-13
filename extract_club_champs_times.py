@@ -42,10 +42,10 @@ import read_club_rankings
 
 folder = 'output/'
 race_times_file = open( folder + 'RaceTimes.txt', 'w' )
-club_champs_start_date_str = '12/9/2021'
-club_champs_end_date_str = '2/10/2021'
+club_champs_start_date_str = '11/9/2022'
+club_champs_end_date_str = '24/9/2022'
 maximum_age = 21 # Any swimmer older will be excluded
-club_champs_meet_name = 'Winsford ASC Club Championships 2021'
+club_champs_meet_name = 'Winsford Club Championships 2022'
 
 club_champs_start_date = helpers.ParseDate_dmY( club_champs_start_date_str )
 club_champs_end_date = helpers.ParseDate_dmY( club_champs_end_date_str )
