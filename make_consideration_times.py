@@ -48,18 +48,24 @@ folder = 'output/'
 #entry_list_file = open( folder + 'EntryList.txt', 'r' )
 consideration_times_file = open( folder + 'ConsiderationTimes.txt', 'w' )
 consideration_times_verbose_file = open( folder + 'ConsiderationTimesVerbose.txt', 'w' )
-consideration_times_html_index_file = open( folder + 'consideration_times_2022_index.html', 'w' )
-consideration_times_folder = 'individual_consideration_times_2022/'
-club_champs_start_date_str = '11/9/2022'
-club_champs_end_date_str = '24/9/2022'
+consideration_times_html_index_file = open( folder + 'consideration_times_2025_index.html', 'w' )
+consideration_times_folder = 'individual_consideration_times_2025/'
+club_champs_start_date_str = '21/6/2025'
+club_champs_end_date_str = '5/7/2025'
 maximum_age = 21 # Any swimmer older will be excluded
-previous_club_champs_name = "Winsford ASC Club Championships 2021"
+previous_club_champs_name = "Winsford Club Championships 2024"
 
 club_champs_start_date = helpers.ParseDate_dmY( club_champs_start_date_str )
 club_champs_date = helpers.ParseDate_dmY( club_champs_end_date_str )
-consideration_date = datetime.date( club_champs_date.year - 1, club_champs_date.month, club_champs_date.day )
+#consideration_date = datetime.date( club_champs_date.year - 1, club_champs_date.month, club_champs_date.day )
+consideration_date = datetime.date( 2024, 7, 5 )
+#consideration_date = datetime.date( 2022, 9, 24 )
 consideration_date_str = consideration_date.strftime( '%d/%m/%Y' )
 num_events = len( short_course_events )
+num_days_grace_back = 14
+num_days_grace_forwards = 14
+
+consideration_threshold_date = consideration_date + datetime.timedelta(days=num_days_grace_forwards)
 
 class ConsiderationTime():
   def __init__(self, event, time, reason, is_nt):
@@ -125,8 +131,8 @@ def process_swimmer( swimmer, swims ):
         if (pb_swim is None) or (swim.short_course_race_time < pb_swim.short_course_race_time):
           pb_swim = swim
           break
-      if swim.date <= consideration_date:
-        # This swim is earlier than the consideration date.
+      if swim.date <= consideration_threshold_date:
+        # This swim is earlier than the consideration threshold date.
         # Is it a PB?
         if (pb_swim is None) or (swim.short_course_race_time < pb_swim.short_course_race_time):
           pb_swim = swim
@@ -147,10 +153,11 @@ def process_swimmer( swimmer, swims ):
       else:
         consideration_time = ConsiderationTime( event, nt_time, 'No PB as of ' + consideration_date_str + ', so consideration time taken from the NT table', True )
     else:
-      if interp_swim is not None:
+      days_before_consideration = (consideration_date - pb_swim.date).days
+      if (interp_swim is not None) and (days_before_consideration > num_days_grace_back):
         # Interpolate the PB between the pre-consideration-date PB and the first PB
         # race after the consideration date
-        interpolation_val = float( (consideration_date - pb_swim.date).days ) / float( (interp_swim.date - pb_swim.date).days )
+        interpolation_val = float( days_before_consideration ) / float( (interp_swim.date - pb_swim.date).days )
         consideration_race_time = (interp_swim.short_course_race_time * interpolation_val) + (pb_swim.short_course_race_time * (1 - interpolation_val))
         consideration_time = ConsiderationTime( event, consideration_race_time, 'Interpolated between ' + pb_swim.meet + ' ' + pb_swim.date.strftime( "%d/%m/%Y" ) + ' (' + str( RaceTime( pb_swim.short_course_race_time ) ) + ') and ' + interp_swim.meet + ' ' + interp_swim.date.strftime( "%d/%m/%Y" )+ ' (' + str( RaceTime( interp_swim.short_course_race_time ) ) + ')', False )
       else:

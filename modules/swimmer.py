@@ -24,7 +24,8 @@ import helpers
 
 special_case_names = {
   "Yu Yam Ian Chan" : "Ian Chan",
-  "Naomi Kington" : "Naomi Kington"
+  #"Naomi Kington" : "Naomi Kington",
+  "Luke Stefan Nevin Suarez" : "Luke Nevin-Suarez"
 }
 
 def check_special_case_name(name):
@@ -64,9 +65,11 @@ class Swimmer():
   @classmethod
   def from_club_rankings(cls, is_male, tokens) -> 'Swimmer':
     asa_number = int( tokens[3] )
+    #print(tokens[0].strip())
     names = check_special_case_name(tokens[0].strip()).split(' ')
-    last_name = names[1].strip()
-    first_name = names[0].strip()
+    #first_name = names[0].strip()
+    first_name = ' '.join(names[0:len(names)-1]).strip()
+    last_name = names[len(names)-1].strip()
     known_as = ''
     date_of_birth = helpers.ParseDate_dmY( tokens[1] )
     return cls(is_male, first_name, last_name, asa_number, date_of_birth, known_as)

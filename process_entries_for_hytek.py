@@ -1,32 +1,98 @@
 # Things to configure go here...
-course_code = 'S'
-csv_file_name = 'C:\\Users\\Sue\\Downloads\\2022-06-13_1911-Len_Thomas_Memorial_Meet-entries.csv'
+course_code = 'L'
+csv_file_name = 'C:\\Users\\Sue\\Downloads\\2026-04-16_1810-Swim_Conwy_Long_Course_Summer_Meet_2026-entries.csv'
 qualifying_window_start_str = '1/1/2019'
 qualifying_window_end_str = '1/1/2050'
 allow_conversions = True
+
+# Swim Conwy event orders
 male_event_order = [
-  "200 IM",
-  "100 Breast",
-  "50 Free",
+  "1500 Free",
   "100 Back",
-  "50 Fly",
-  "50 Back",
-  "100 Fly",
-  "50 Breast",
+  "200 Breast",
+  "400 IM",
+  "200 Fly",
   "100 Free",
+  "50 Breast",
+  "50 Free",
+  "800 Free",
+  "200 Free",
+  "200 Back",
+  "100 Breast",
+  "50 Fly",
+  "100 Fly",
+  "200 IM",
+  "400 Free",
+  "50 Back",
+]
+female_event_order = [
+  "1500 Free",
+  "200 Free",
+  "200 Back",
+  "100 Breast",
+  "50 Fly",
+  "100 Fly",
+  "200 IM",
+  "400 Free",
+  "50 Back",
+  "800 Free",
+  "100 Back",
+  "200 Breast",
+  "400 IM",
+  "200 Fly",
+  "100 Free",
+  "50 Breast",
+  "50 Free",
 ]
 
-female_event_order = [
-  "50 Back",
-  "100 Fly",
-  "50 Breast",
-  "100 Free",
-  "200 IM",
-  "100 Breast",
-  "50 Free",
-  "100 Back",
-  "50 Fly",
-]
+
+# Len Thomas event orders
+#male_event_order = [
+#  "200 IM",
+#  "100 Breast",
+#  "50 Free",
+#  "100 Back",
+#  "50 Fly",
+#  "50 Back",
+#  "100 Fly",
+#  "50 Breast",
+#  "100 Free",
+#]
+#female_event_order = [
+#  "50 Back",
+#  "100 Fly",
+#  "50 Breast",
+#  "100 Free",
+#  "200 IM",
+#  "100 Breast",
+#  "50 Free",
+#  "100 Back",
+#  "50 Fly",
+#]
+
+#  "400 IM",
+#  "800 Free",
+#  "200 Free",
+#  "200 Fly",
+#  "200 Back",
+#  "1500 Free",
+#  "400 Free",
+#  "200 Breast",
+
+#  "100 Free",
+#  "200 Back",
+#  "800 Free",
+#  "400 Free",
+#  "200 Breast",
+#  "100 Breast",
+#  "50 Free",
+#  "400 IM",
+#  "100 Fly",
+#  "1500 Free",
+#  "200 IM",
+#  "100 Back",
+#  "200 Free",
+#  "200 Fly",
 
 import sys
 sys.path.append("modules")
@@ -121,19 +187,20 @@ class EnteringSwimmer():
 entering_swimmers = {}
 num_entries = len(entries)
 for entry in entries:
-  asa_number = int( entry['ASA-Number'] )
-  if asa_number not in asa_number_to_swimmer:
-    print('Unknown swimmer: {name}'.format(name = entry['Name']))
-    swimmer = Swimmer.from_swimming_events_csv(entry)
-    print(swimmer.full_name())
-    asa_number_to_swimmer[asa_number] = swimmer
-  else:
-    swimmer = asa_number_to_swimmer[asa_number]
-  entering_swimmer = entering_swimmers.get(asa_number)
-  if entering_swimmer is None:
-    entering_swimmer = EnteringSwimmer(swimmer)
-    entering_swimmers[asa_number] = entering_swimmer
-  entering_swimmer.entries.append(RaceEntry(swimmer, entry))
+  if entry['Status'] != 'Withdrawn':
+    asa_number = int( entry['ASA-Number'] )
+    if asa_number not in asa_number_to_swimmer:
+      print('Unknown swimmer: {name}'.format(name = entry['Name']))
+      swimmer = Swimmer.from_swimming_events_csv(entry)
+      print(swimmer.full_name())
+      asa_number_to_swimmer[asa_number] = swimmer
+    else:
+      swimmer = asa_number_to_swimmer[asa_number]
+    entering_swimmer = entering_swimmers.get(asa_number)
+    if entering_swimmer is None:
+      entering_swimmer = EnteringSwimmer(swimmer)
+      entering_swimmers[asa_number] = entering_swimmer
+    entering_swimmer.entries.append(RaceEntry(swimmer, entry))
 
 def swimmer_sort_key(entering_swimmer):
   key = ""
@@ -155,7 +222,7 @@ print('Swimmers:')
 print('---------------------------')
 for entering_swimmer in sorted_entering_swimmers:
   swimmer = entering_swimmer.swimmer
-  print('{name}\n\tSwim England #: {asa_number}\n\tDate of Birth: {dob}'.format(name = swimmer.full_name(), asa_number = swimmer.asa_number, dob = swimmer.date_of_birth_str()))
+  print('{name}\n\tSwim England #: {asa_number}\n\tDate of Birth: {dob}\n'.format(name = swimmer.full_name(), asa_number = swimmer.asa_number, dob = swimmer.date_of_birth_str()))
 
 print('\n\n---------------------------')
 print('Events:')
@@ -166,11 +233,13 @@ for entering_swimmer in sorted_entering_swimmers:
 
   entering_swimmer.entries.sort(key=entry_score)
   for entry in entering_swimmer.entries:
+    #if swimmer.full_name() == "Helaina Horne":
+    #  print(str(entry.time))
     pb_str = '-'
     if entry.pb is not None:
       pb_str = str(entry.pb)
     time = entry.pb
-    #time = entry.time
+    time = entry.time
     caution = False
     has_pb = False
     if entry.pb is not None:
@@ -182,7 +251,10 @@ for entering_swimmer in sorted_entering_swimmers:
       elif float(entry.time) < float(entry.pb):
         # Within 0.1s, so let's assume the entry time was rounded slightly aggressively and go with that
         time = entry.time
-        pass
+      elif float(entry.time) > (float(entry.pb) * 1.1):
+        # Entry time is a lot slower than the actual PB
+        # What gives?
+        caution = True
 
     if caution:
       print(f'\t{entry.event.short_name_without_course():<10} - Entry-Time:    {str(entry.time)+",":<10} PB: {pb_str+",":<10} Comment: "{entry.comment}"')

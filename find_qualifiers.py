@@ -53,8 +53,27 @@ maximum_age = 100 # Any swimmer older will be excluded
 
 age_on_date = helpers.ParseDate_dmY( age_on_date_str )
 earliest_pb_date = helpers.ParseDate_dmY( earliest_pb_date_str )
+
+# Set latest_pb_date_youth to either tomorrow, or what's configured
+try: latest_pb_date_youth_str
+except NameError: latest_pb_date_youth = datetime.date.today() + datetime.timedelta(days=1)
+else: latest_pb_date_youth = helpers.ParseDate_dmY( latest_pb_date_youth_str )
+
+# Set latest_pb_date_youth to either tomorrow, or what's configured
+try: latest_pb_date_senior_str
+except NameError: latest_pb_date_senior = datetime.date.today() + datetime.timedelta(days=1)
+else: latest_pb_date_senior = helpers.ParseDate_dmY( latest_pb_date_senior_str )
+
 num_events = len( short_course_events )
-    
+
+def swim_date_qualifies(swim_date, age_on_day):
+  if swim_date < earliest_pb_date:
+    return False
+  if age_on_day >= 15:
+    # Youth
+    return swim_date <= latest_pb_date_youth
+  return swim_date <= latest_pb_date_senior
+
 def process_swimmer( swimmer, swims ):
   age = helpers.CalcAge( swimmer.date_of_birth, age_on_date )
  
@@ -74,7 +93,7 @@ def process_swimmer( swimmer, swims ):
     pb_by_event.append( None )
     qual_pb_by_event.append( None )
   for swim in swims:
-    if swim.date >= earliest_pb_date:
+    if swim_date_qualifies(swim.date, age):
       event_code = swim.event.get_short_course_event_code()
       swim.converted_time = swim.race_time
       swim.is_converted = False
@@ -83,8 +102,12 @@ def process_swimmer( swimmer, swims ):
         swim.converted_time = swim.event.convert_time( swim.race_time )
         swim.is_converted = True
         #print( swim.event.short_name_without_course() + "\t" + str( swim.event.to_int() ) + "\t" + str( RaceTime( swim.race_time ) ) + "\t" + str( RaceTime( swim.converted_time ) ) + "\t" + swim.meet )
-        # Round to 0.1s
-        swim.converted_time = math.floor((swim.converted_time * 10) + 0.5) * 0.1
+        if round_down_conversions:
+          # Round down to 0.1s
+          swim.converted_time = math.floor(swim.converted_time * 10) * 0.1
+        else:
+          # Round to 0.1s
+          swim.converted_time = math.floor((swim.converted_time * 10) + 0.5) * 0.1
 
       qt = get_qualifying_time( event_code, swimmer.is_male, age )
       swim.qualifies = True

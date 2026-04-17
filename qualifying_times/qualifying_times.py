@@ -71,10 +71,13 @@ def get_qualifying_time( event_code, is_male, age ):
     qt_age = min_age
   if age > max_age:
     qt_age = max_age
+  qt = qt_for_event[ qt_age - min_age ]
+  if(qt is None):
+    return None
   # Add a very small epsilon, because it looks like our roundings
   # still have very small errors which can make <= testing fail
   # on numbers that superficially appear very equal.
-  return qt_for_event[ qt_age - min_age ] + 0.000000001
+  return qt + 0.000000001
 
 def get_consideration_time( event_code, is_male, age ):
   qt_for_event = None

@@ -1,12 +1,29 @@
-file = open('C:\\Users\\Sue\\Downloads\\2022-09-24_0927-Winsford_ASC_Club_Championships_2022-heat-sheets (1).csv', 'r')
+file = open('C:\\Users\\Sue\\Downloads\\2026-04-11_0902-Winsford_Spring_Development_Meet_2026-heat-sheets (1).csv', 'r')
 
-include_club = False
+include_club = True
+
+# Search and replaces
+replacements = [
+  ("Individual Medley", "IM"),
+  ("9 Yrs/Over ", ""),
+  (",0.0", ",-"),
+  (",0", ","),
+  ("Stockport Mo", "Stockport"),
+  ("N'wich Seals", "Nantwich"),
+  ("Romiley Mari", "Romiley"),
+  ("Newcastle St", "N'castle St"),
+  ("Bolton Metro", "Bolton"),
+  ("Chadderton", "Chadd'ton"),
+]
 
 heat = 0
 
 for line in file:
   # Strip the
   line = line.strip('\n')
+
+  for replacement in replacements:
+    line = line.replace(replacement[0], replacement[1])
 
   tokens = line.split(',')
   if len(tokens) > 2:
@@ -18,7 +35,7 @@ for line in file:
         heat = this_heat
         print('Heat ' + str(heat))
         if include_club:
-          print('Lane\tSwimmer\tClub\tAge\Entry Time')
+          print('Lane\tSwimmer\tClub\tAge\tTime')
         else:
           print('Lane\tSwimmer\tAge\t\tEntry Time')
       if include_club:
